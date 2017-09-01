@@ -1,7 +1,6 @@
 package base58
 
 import (
-	"errors"
 	"fmt"
 	"math/big"
 )
@@ -53,6 +52,8 @@ var (
 	}
 )
 
+// Encode takes a slice of bytes and encodes it to base58 string.
+// Leading zero bytes are kept in place for precise decoding.
 func Encode(input []byte) (output string) {
 	num := new(big.Int).SetBytes(input)
 
@@ -71,6 +72,8 @@ func Encode(input []byte) (output string) {
 	return
 }
 
+// Decode takes string as an input and returns decoded string and error
+// If provided string contains characters illegal for base58 the returned error will be <notnil>
 func Decode(input string) (output []byte, err error) {
 	result := big.NewInt(0)
 	multi := big.NewInt(1)
@@ -80,7 +83,7 @@ func Decode(input string) (output []byte, err error) {
 	for i := len(input) - 1; i >= 0; i-- {
 		tmp := base58table[input[i]]
 		if tmp == 255 {
-			err = errors.New(fmt.Sprintf("Invalid Base58 input string at character \"%s\", position %d", string(input[i]), i))
+			err = fmt.Errorf("Invalid Base58 input string at character \"%s\", position %d", string(input[i]), i)
 			return
 		}
 		tmpBig.SetInt64(int64(tmp))
