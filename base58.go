@@ -1,9 +1,9 @@
 package base58
 
 import (
-	"math/big"
 	"errors"
 	"fmt"
+	"math/big"
 )
 
 var (
@@ -55,13 +55,13 @@ var (
 
 func Encode(input []byte) (output string) {
 	num := new(big.Int).SetBytes(input)
-	
+
 	for num.Cmp(bigZero) > 0 {
 		mod := new(big.Int)
 		num.DivMod(num, bigRadix, mod)
 		output = alphabet[mod.Int64()] + output
 	}
-	
+
 	for _, i := range input {
 		if i != 0 {
 			break
@@ -74,13 +74,13 @@ func Encode(input []byte) (output string) {
 func Decode(input string) (output []byte, err error) {
 	result := big.NewInt(0)
 	multi := big.NewInt(1)
-	
+
 	tmpBig := new(big.Int)
-	
+
 	for i := len(input) - 1; i >= 0; i-- {
 		tmp := base58table[input[i]]
 		if tmp == 255 {
-			err = errors.New(fmt.Sprintf("Invalid Base58 input string at character \"%s\", position %d", input[i], i))
+			err = errors.New(fmt.Sprintf("Invalid Base58 input string at character \"%s\", position %d", string(input[i]), i))
 			return
 		}
 		tmpBig.SetInt64(int64(tmp))
@@ -88,9 +88,9 @@ func Decode(input string) (output []byte, err error) {
 		result.Add(result, tmpBig)
 		multi.Mul(multi, bigRadix)
 	}
-	
+
 	tmpBytes := result.Bytes()
-	
+
 	var numZeros int
 	for numZeros = 0; numZeros < len(input); numZeros++ {
 		if input[numZeros] != '1' {
@@ -100,6 +100,6 @@ func Decode(input string) (output []byte, err error) {
 	length := numZeros + len(tmpBytes)
 	output = make([]byte, length)
 	copy(output[numZeros:], tmpBytes)
-	
+
 	return
 }

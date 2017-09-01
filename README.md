@@ -1,4 +1,4 @@
-# Base58
+# Base58  [![Go Report Card](https://goreportcard.com/badge/github.com/akamensky/base58)](https://goreportcard.com/report/github.com/akamensky/base58)
 
 This is a Go language package implementing base58 encoding/decoding algorithms. This implementation attempts to optimize performance of encoding and decoding data to be used with other applications.
 

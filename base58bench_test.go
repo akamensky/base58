@@ -1,10 +1,10 @@
 package base58_test
 
 import (
-	"testing"
 	"crypto/rand"
-	"log"
 	"github.com/akamensky/base58"
+	"log"
+	"testing"
 )
 
 func getRandomBytes(n int) []byte {
@@ -38,7 +38,7 @@ func benchmarkDecode(n int, b *testing.B) {
 		data[i] = base58.Encode(getRandomBytes(n))
 	}
 	b.StartTimer()
-	
+
 	for i := 0; i < b.N; i++ {
 		base58.Decode(data[i])
 	}

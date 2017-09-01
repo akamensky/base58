@@ -1,11 +1,11 @@
 package base58_test
 
 import (
-	"testing"
-	"encoding/hex"
 	"bytes"
 	"encoding/binary"
+	"encoding/hex"
 	"github.com/akamensky/base58"
+	"testing"
 )
 
 var stringTests = []struct {
@@ -25,8 +25,8 @@ var stringTests = []struct {
 	{"00000000000000000000000000000000000000000000000000000000000000", "3sN2THZeE9Eh9eYrwkvZqNstbHGvrxSAM7gXUXvyFQP8XvQLUqNCS27icwUeDT7ckHm4FUHM2mTVh1vbLmk7y"},
 }
 
-var intTests = []struct{
-	in uint64
+var intTests = []struct {
+	in  uint64
 	out string
 }{
 	{3429289555, "11116E31Jz"},
@@ -94,7 +94,7 @@ func TestBase58(t *testing.T) {
 			continue
 		}
 	}
-	
+
 	// Decode tests
 	for x, test := range hexTests {
 		b, err := hex.DecodeString(test.in)
