@@ -16,7 +16,7 @@ var (
 		"h", "i", "j", "k", "m", "n", "o", "p", "q", "r",
 		"s", "t", "u", "v", "w", "x", "y", "z",
 	}
-	base58table = [256]byte{
+	b58table = [256]byte{
 		255, 255, 255, 255, 255, 255, 255, 255,
 		255, 255, 255, 255, 255, 255, 255, 255,
 		255, 255, 255, 255, 255, 255, 255, 255,
@@ -81,9 +81,9 @@ func Decode(input string) (output []byte, err error) {
 	tmpBig := new(big.Int)
 
 	for i := len(input) - 1; i >= 0; i-- {
-		tmp := base58table[input[i]]
+		tmp := b58table[input[i]]
 		if tmp == 255 {
-			err = fmt.Errorf("Invalid Base58 input string at character \"%s\", position %d", string(input[i]), i)
+			err = fmt.Errorf("invalid Base58 input string at character \"%s\", position %d", string(input[i]), i)
 			return
 		}
 		tmpBig.SetInt64(int64(tmp))
