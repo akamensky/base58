@@ -50,9 +50,9 @@ var (
 func Encode(input []byte) string {
 	output := make([]byte, 0)
 	num := new(big.Int).SetBytes(input)
+	mod := new(big.Int)
 
 	for num.Cmp(bigZero) > 0 {
-		mod := new(big.Int)
 		num.DivMod(num, bigRadix, mod)
 		output = append(output, alphabet[mod.Int64()])
 	}
