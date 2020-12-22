@@ -76,20 +76,16 @@ func Encode(input []byte) (output string) {
 // If provided string contains characters illegal for base58 the returned error will be <notnil>
 func Decode(input string) (output []byte, err error) {
 	result := big.NewInt(0)
-	multi := big.NewInt(1)
-
 	tmpBig := new(big.Int)
 
-	for i := len(input) - 1; i >= 0; i-- {
+	for i := range input {
 		tmp := b58table[input[i]]
 		if tmp == 255 {
 			err = fmt.Errorf("invalid Base58 input string at character \"%s\", position %d", string(input[i]), i)
 			return
 		}
-		tmpBig.SetInt64(int64(tmp))
-		tmpBig.Mul(multi, tmpBig)
-		result.Add(result, tmpBig)
-		multi.Mul(multi, bigRadix)
+		result.Mul(result, bigRadix)
+		result.Add(result, tmpBig.SetInt64(int64(tmp)))
 	}
 
 	tmpBytes := result.Bytes()
