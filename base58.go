@@ -8,14 +8,7 @@ import (
 var (
 	bigZero  = big.NewInt(0)
 	bigRadix = big.NewInt(58)
-	alphabet = []string{
-		"1", "2", "3", "4", "5", "6", "7", "8", "9", "A",
-		"B", "C", "D", "E", "F", "G", "H", "J", "K", "L",
-		"M", "N", "P", "Q", "R", "S", "T", "U", "V", "W",
-		"X", "Y", "Z", "a", "b", "c", "d", "e", "f", "g",
-		"h", "i", "j", "k", "m", "n", "o", "p", "q", "r",
-		"s", "t", "u", "v", "w", "x", "y", "z",
-	}
+	alphabet = "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz"
 	b58table = [256]byte{
 		255, 255, 255, 255, 255, 255, 255, 255,
 		255, 255, 255, 255, 255, 255, 255, 255,
@@ -54,22 +47,25 @@ var (
 
 // Encode takes a slice of bytes and encodes it to base58 string.
 // Leading zero bytes are kept in place for precise decoding.
-func Encode(input []byte) (output string) {
+func Encode(input []byte) string {
+	output := make([]byte, 0)
 	num := new(big.Int).SetBytes(input)
+	mod := new(big.Int)
 
 	for num.Cmp(bigZero) > 0 {
-		mod := new(big.Int)
 		num.DivMod(num, bigRadix, mod)
-		output = alphabet[mod.Int64()] + output
+		output = append(output, alphabet[mod.Int64()])
 	}
 
-	for _, i := range input {
-		if i != 0 {
-			break
-		}
-		output = alphabet[0] + output
+	for i := 0; i < len(input) && input[i] == 0; i++ {
+		output = append(output, alphabet[0])
 	}
-	return
+
+	// Revert byte order:
+	for i := 0; i < len(output)/2; i++ {
+		output[i], output[len(output)-1-i] = output[len(output)-1-i], output[i]
+	}
+	return string(output)
 }
 
 // Decode takes string as an input and returns decoded string and error
