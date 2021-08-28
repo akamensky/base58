@@ -74,14 +74,26 @@ func Decode(input string) (output []byte, err error) {
 	result := big.NewInt(0)
 	tmpBig := new(big.Int)
 
-	for i := range input {
-		tmp := b58table[input[i]]
-		if tmp == 255 {
-			err = fmt.Errorf("invalid Base58 input string at character \"%s\", position %d", string(input[i]), i)
-			return
+	for i := 0; i < len(input); {
+		var a, m int64 = 0, 58
+
+		// This inner loop reduces the amount of calculations with
+		// *big.Int by doing them with int64. This improves performance.
+		for f := true; i < len(input) && (f || i%10 != 0); i++ {
+			tmp := b58table[input[i]]
+			if tmp == 255 {
+				msg := "invalid Base58 input string at character \"%c\", position %d"
+				return output, fmt.Errorf(msg, input[i], i)
+			}
+			a = a * 58 + int64(tmp)
+			if (!f) {
+				m *= 58
+			}
+			f = false
 		}
-		result.Mul(result, bigRadix)
-		result.Add(result, tmpBig.SetInt64(int64(tmp)))
+
+		result.Mul(result, tmpBig.SetInt64(m))
+		result.Add(result, tmpBig.SetInt64(a))
 	}
 
 	tmpBytes := result.Bytes()
