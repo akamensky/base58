@@ -6,10 +6,9 @@ import (
 )
 
 var (
-	bigZero  = big.NewInt(0)
-	bigRadix = big.NewInt(58)
-	alphabet = "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz"
-	b58table = [256]byte{
+	bigIntermediateRadix = big.NewInt(430804206899405824) // 58**10
+	alphabet             = "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz"
+	b58table             = [256]byte{
 		255, 255, 255, 255, 255, 255, 255, 255,
 		255, 255, 255, 255, 255, 255, 255, 255,
 		255, 255, 255, 255, 255, 255, 255, 255,
@@ -52,9 +51,17 @@ func Encode(input []byte) string {
 	num := new(big.Int).SetBytes(input)
 	mod := new(big.Int)
 
-	for num.Cmp(bigZero) > 0 {
-		num.DivMod(num, bigRadix, mod)
-		output = append(output, alphabet[mod.Int64()])
+	var primitiveNum int64
+	for num.Sign() > 0 {
+		num.DivMod(num, bigIntermediateRadix, mod)
+		primitiveNum = mod.Int64()
+
+		// This inner loop reduces the amount of calculations with
+		// *big.Int by doing them with int64. This improves performance.
+		for i := 0; (num.Sign() > 0 || primitiveNum > 0) && i < 10; i++ {
+			output = append(output, alphabet[primitiveNum%58])
+			primitiveNum /= 58
+		}
 	}
 
 	for i := 0; i < len(input) && input[i] == 0; i++ {
